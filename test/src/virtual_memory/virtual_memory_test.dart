@@ -54,8 +54,8 @@ void main() {
       }
     }
 
-    test("allocate(..., protection:0)", () {
-      testProtection("allocate", 0);
+    test("allocate(..., protection:VirtualMemory.protectionNoAccess)", () {
+      testProtection("allocate", VirtualMemory.protectionNoAccess);
     });
 
     test("allocate(..., protection:VirtualMemory.protectionRead)", () {
@@ -66,8 +66,8 @@ void main() {
       testProtection("allocate", VirtualMemory.protectionReadWrite);
     });
 
-    test("setProtection(..., 0)", () {
-      testProtection("setProtection", 0);
+    test("setProtection(..., VirtualMemory.protectionNoAccess)", () {
+      testProtection("setProtection", VirtualMemory.protectionNoAccess);
     });
 
     test("setProtection(..., VirtualMemory.protectionRead)", () {

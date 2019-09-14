@@ -23,6 +23,7 @@ import 'virtual_memory_impl_posix.dart';
 import 'virtual_memory_impl_windows.dart';
 
 abstract class VirtualMemory {
+  static const int protectionNoAccess = libc.PROT_NONE;
   static const int protectionRead = libc.PROT_READ;
   static const int protectionWrite = libc.PROT_WRITE;
   static const int protectionReadWrite = libc.PROT_READ | libc.PROT_WRITE;
