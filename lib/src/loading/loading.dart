@@ -15,8 +15,6 @@
 import 'dart:ffi' as ffi;
 import 'dart:io';
 
-import 'package:meta/meta.dart';
-
 /// Returns true when [Platform.isIOS] or [Platform.isMacOS] is true.
 bool get isDarwin {
   return Platform.isIOS || Platform.isMacOS;

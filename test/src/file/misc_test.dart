@@ -1,8 +1,7 @@
-import 'dart:typed_data';
+import 'dart:io';
 
 import 'package:os/file_system.dart';
 import 'package:test/test.dart';
-import 'dart:io';
 
 void main() {
   test("chmod", () async {

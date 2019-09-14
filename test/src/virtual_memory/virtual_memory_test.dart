@@ -1,6 +1,7 @@
+import 'dart:io';
+
 import 'package:os/virtual_memory.dart';
 import 'package:test/test.dart';
-import 'dart:io';
 
 void main() {
   group("VirtualMemory:", () {

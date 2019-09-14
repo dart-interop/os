@@ -1,9 +1,8 @@
+import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:os/file_system.dart';
-import 'package:os/src/libc/all.dart';
 import 'package:test/test.dart';
-import 'dart:io';
 
 void main() {
   test(

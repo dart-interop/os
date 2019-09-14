@@ -12,8 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import 'functions.dart' show libraryLoader;
 import 'dart:ffi' as ffi;
+
+import 'functions.dart' show libraryLoader;
 
 final _errno = libraryLoader.open().lookup<ffi.Int32>('errno');
 
