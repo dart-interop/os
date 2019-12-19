@@ -6,11 +6,11 @@ import 'package:test/test.dart';
 
 void main() {
   test(
-    "NamedPipe",
+    'NamedPipe',
     () async {
       // Construct File
       final file = File.fromUri(Directory.systemTemp.uri.resolve(
-        "named_pipe_test",
+        'named_pipe_test',
       ));
 
       // Construct NamedPipe
@@ -62,7 +62,7 @@ void main() {
       fifo.deleteSync();
       expect(file.existsSync(), isFalse);
     },
-    testOn: "posix",
+    testOn: 'posix',
     timeout: const Timeout(Duration(milliseconds: 200)),
   );
 }

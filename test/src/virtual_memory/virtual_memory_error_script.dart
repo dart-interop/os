@@ -10,7 +10,7 @@ void main(List<String> args) {
 void mutateMemory(String when, int protection, String op) {
   VirtualMemory virtualMemory;
   switch (when) {
-    case "allocate":
+    case 'allocate':
       // Allocate
       virtualMemory = VirtualMemory.allocate(
         1024,
@@ -18,7 +18,7 @@ void mutateMemory(String when, int protection, String op) {
       );
       break;
 
-    case "setProtection":
+    case 'setProtection':
       // Allocate with default protection
       virtualMemory = VirtualMemory.allocate(1024);
 
@@ -27,20 +27,20 @@ void mutateMemory(String when, int protection, String op) {
       break;
 
     default:
-      throw ArgumentError.value(when, "when");
+      throw ArgumentError.value(when, 'when');
   }
   switch (op) {
-    case "read":
+    case 'read':
       final value = virtualMemory.asUint8List[0];
-      print("Read: $value");
+      print('Read: $value');
       break;
 
-    case "write":
+    case 'write':
       virtualMemory.asUint8List[0] = 3;
       break;
 
     default:
-      throw ArgumentError.value(op, "op");
+      throw ArgumentError.value(op, 'op');
   }
-  print("SUCCESS");
+  print('SUCCESS');
 }

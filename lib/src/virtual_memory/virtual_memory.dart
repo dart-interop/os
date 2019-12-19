@@ -38,7 +38,7 @@ abstract class VirtualMemory {
     int flags,
   }) {
     if (size < 0) {
-      throw ArgumentError.value(size, "size");
+      throw ArgumentError.value(size, 'size');
     }
     protection ??= protectionRead | protectionWrite;
     flags ??= flagsPrivate | flagsAnonymous;

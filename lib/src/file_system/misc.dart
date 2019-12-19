@@ -33,7 +33,7 @@ Future<void> chmod(FileSystemEntity entity, int mode) async {
 void chmodSync(FileSystemEntity entity, int mode) {
   if (Platform.isWindows) {
     // TODO: Implement in Windows?
-    throw UnsupportedError("Not supported in Windows");
+    throw UnsupportedError('Not supported in Windows');
   }
   final pathAddr = ffi.Utf8.toUtf8(entity.path);
   try {
@@ -42,9 +42,9 @@ void chmodSync(FileSystemEntity entity, int mode) {
       mode,
     );
     if (result < 0) {
-      throw StateError("Error code: ${libc.errorDescription}");
+      throw StateError('Error code: ${libc.errorDescription}');
     }
   } finally {
-    pathAddr.free();
+    ffi.free(pathAddr);
   }
 }

@@ -1,13 +1,13 @@
 // Copyright 2019 terrier989 <terrier989@gmail.com>.
 //
-// Licensed under the Apache License, Version 2.0 (the "License");
+// Licensed under the Apache License, Version 2.0 (the 'License');
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
 //
 // http://www.apache.org/licenses/LICENSE-2.0
 //
 // Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
+// distributed under the License is distributed on an 'AS IS' BASIS,
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
@@ -35,7 +35,7 @@ int _openFd(String path, int flags) {
       0,
     );
   } finally {
-    pathAddr.free();
+    ffi.free(pathAddr);
   }
 }
 
@@ -59,10 +59,10 @@ class NamedPipe {
         mode,
       );
       if (result < 0) {
-        throw _NamedPipeException("create", path, libc.errorCode);
+        throw _NamedPipeException('create', path, libc.errorCode);
       }
     } finally {
-      pathAddr.free();
+      ffi.free(pathAddr);
     }
   }
 
@@ -80,10 +80,14 @@ class NamedPipe {
         pathAddr,
       );
       if (result < 0) {
-        throw _NamedPipeException("delete", path, libc.errorCode);
+        throw _NamedPipeException(
+          'delete',
+          path,
+          libc.errorCode,
+        );
       }
     } finally {
-      pathAddr.free();
+      ffi.free(pathAddr);
     }
   }
 
@@ -98,7 +102,11 @@ class NamedPipe {
       // Open the file
       final fd = _openFd(path, libc.O_RDONLY | libc.O_NONBLOCK);
       if (fd < 0) {
-        final error = _NamedPipeException("open", path, libc.errorCode);
+        final error = _NamedPipeException(
+          'open',
+          path,
+          libc.errorCode,
+        );
         streamController.addError(error);
         streamController.close();
         return;
@@ -106,9 +114,8 @@ class NamedPipe {
 
       // Allocate a buffer that can be filled by 'libc'
       final bufferLength = 512;
-      final buffer = ffi.Pointer<ffi.Uint8>.allocate(count: bufferLength);
-      final bufferData =
-          buffer.asExternalTypedData(count: bufferLength) as Uint8List;
+      final buffer = ffi.allocate<ffi.Uint8>(count: bufferLength);
+      final bufferData = buffer.asTypedList(bufferLength);
 
       var libcClosed = false;
 
@@ -125,7 +132,7 @@ class NamedPipe {
           libcClosed = true;
 
           // Free memory
-          buffer.free();
+          ffi.free(buffer);
 
           // Close file handle
           libc.close(fd);
@@ -145,7 +152,11 @@ class NamedPipe {
             return;
           }
 
-          final error = _NamedPipeException("read", path, errorCode);
+          final error = _NamedPipeException(
+            'read',
+            path,
+            errorCode,
+          );
           streamController.addError(error);
           streamController.close();
           return;
@@ -186,7 +197,7 @@ class _NamedPipeException implements Exception {
   @override
   String toString() {
     final errorName = libc.errorNames[errorCode];
-    return "Operation '$op' on a named pipe failed.\n  path = '$path'\n  error = $errorCode ($errorName)";
+    return 'Operation "$op" on a named pipe failed.\n  path = "$path"\n  error = $errorCode ($errorName)';
   }
 }
 
@@ -197,21 +208,21 @@ class _NamedPipeWriter implements Sink<List<int>>, StreamConsumer<List<int>> {
   bool _isClosed = false;
   final Duration _timeout;
 
-  _NamedPipeWriter(this.path, {Duration timeout}) : this._timeout = timeout {
+  _NamedPipeWriter(this.path, {Duration timeout}) : _timeout = timeout {
     if (!File(path).existsSync()) {
-      throw StateError("File '$path' does not exist");
+      throw StateError('File "$path" does not exist');
     }
   }
 
   @override
   Future<void> add(List<int> data) {
     if (_isClosed) {
-      throw StateError("The sink is closed");
+      throw StateError('The sink is closed');
     }
-    var oldFuture = this._future;
+    var oldFuture = _future;
     if (oldFuture == null) {
       oldFuture = _waitForOpen();
-      this._future = oldFuture;
+      _future = oldFuture;
     }
     final newFuture = _add(oldFuture, data);
     _future = newFuture;
@@ -228,13 +239,17 @@ class _NamedPipeWriter implements Sink<List<int>>, StreamConsumer<List<int>> {
   @override
   Future<void> close() {
     _isClosed = true;
-    final future = this._future ?? Future<void>.value();
+    final future = _future ?? Future<void>.value();
     return future.whenComplete(() {
       if (_fd != null) {
         final result = libc.close(_fd);
         _fd = null;
         if (result < 0) {
-          throw _NamedPipeException("close", path, libc.errorCode);
+          throw _NamedPipeException(
+            'close',
+            path,
+            libc.errorCode,
+          );
         }
       }
     });
@@ -251,7 +266,7 @@ class _NamedPipeWriter implements Sink<List<int>>, StreamConsumer<List<int>> {
 
     // Allocate buffer than 'libc' can use
     final length = data.length;
-    final pointer = ffi.Pointer<ffi.Uint8>.allocate(count: length);
+    final pointer = ffi.allocate<ffi.Uint8>(count: length);
 
     try {
       // Declare remaining pointer/length
@@ -259,14 +274,13 @@ class _NamedPipeWriter implements Sink<List<int>>, StreamConsumer<List<int>> {
       var remainingLength = length;
 
       // Copy data
-      final pointerData =
-          pointer.asExternalTypedData(count: length) as Uint8List;
+      final pointerData = pointer.asTypedList(length);
       pointerData.setAll(0, data);
 
       // While we have remaining bytes
       while (remainingLength > 0) {
         if (_isClosed) {
-          throw StateError("The sink is closed");
+          throw StateError('The sink is closed');
         }
 
         // Write
@@ -274,7 +288,7 @@ class _NamedPipeWriter implements Sink<List<int>>, StreamConsumer<List<int>> {
 
         // An error?
         if (n < 0) {
-          throw _NamedPipeException("add", path, libc.errorCode);
+          throw _NamedPipeException('add', path, libc.errorCode);
         }
 
         // Wrote something?
@@ -290,7 +304,7 @@ class _NamedPipeWriter implements Sink<List<int>>, StreamConsumer<List<int>> {
         await Future.delayed(_shortDuration);
       }
     } finally {
-      pointer.free();
+      ffi.free(pointer);
     }
   }
 
@@ -298,7 +312,7 @@ class _NamedPipeWriter implements Sink<List<int>>, StreamConsumer<List<int>> {
     final startedAt = DateTime.now();
     while (true) {
       if (_isClosed) {
-        throw StateError("The sink is closed");
+        throw StateError('The sink is closed');
       }
       final fd = _openFd(path, libc.O_WRONLY | libc.O_NONBLOCK);
       if (fd <= 0) {
@@ -308,11 +322,11 @@ class _NamedPipeWriter implements Sink<List<int>>, StreamConsumer<List<int>> {
           await Future.delayed(_shortDuration);
           if (_timeout != null &&
               DateTime.now().isAfter(startedAt.add(_timeout))) {
-            throw TimeoutException("Timeout before reader was attached");
+            throw TimeoutException('Timeout before reader was attached');
           }
           continue;
         }
-        throw _NamedPipeException("open", path, libc.errorCode);
+        throw _NamedPipeException('open', path, libc.errorCode);
       }
       _fd = fd;
       return;

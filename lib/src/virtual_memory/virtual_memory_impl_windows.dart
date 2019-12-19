@@ -34,7 +34,7 @@ class VirtualMemoryImplWindows implements VirtualMemory {
 
   @override
   Uint8List get asUint8List {
-    return _pointer.asExternalTypedData(count: size) as Uint8List;
+    return _pointer.asTypedList(size);
   }
 
   @override
@@ -48,7 +48,7 @@ class VirtualMemoryImplWindows implements VirtualMemory {
 
   @override
   void setProtection(int protection) {
-    final oldPtr = ffi.Pointer<ffi.Uint32>.allocate();
+    final oldPtr = ffi.allocate<ffi.Uint32>();
     try {
       windows.virtualProtect(
         _pointer,
@@ -57,7 +57,7 @@ class VirtualMemoryImplWindows implements VirtualMemory {
         oldPtr,
       );
     } finally {
-      oldPtr.free();
+      ffi.free(oldPtr);
     }
   }
 

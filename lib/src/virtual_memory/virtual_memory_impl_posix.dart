@@ -31,7 +31,7 @@ class VirtualMemoryImplPosix implements VirtualMemory {
 
   factory VirtualMemoryImplPosix.fromPointer(
       ffi.Pointer<ffi.Uint8> pointer, int size) {
-    final data = pointer.cast<ffi.Uint8>().asExternalTypedData(count: size);
+    final data = pointer.cast<ffi.Uint8>().asTypedList(size);
     return VirtualMemoryImplPosix._(pointer, size, data);
   }
 
@@ -68,7 +68,7 @@ class VirtualMemoryImplPosix implements VirtualMemory {
     );
     if (pointer.address < 0) {
       throw StateError(
-        "Allocating $size bytes of memory failed: ${libc.errorDescription}",
+        'Allocating $size bytes of memory failed: ${libc.errorDescription}',
       );
     }
     return VirtualMemoryImplPosix.fromPointer(pointer, size);
