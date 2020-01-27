@@ -62,7 +62,7 @@ void main() {
       fifo.deleteSync();
       expect(file.existsSync(), isFalse);
     },
-    testOn: 'posix',
+    testOn: 'mac-os',
     timeout: const Timeout(Duration(milliseconds: 200)),
   );
 }

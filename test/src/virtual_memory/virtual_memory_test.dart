@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:os/virtual_memory.dart';
@@ -12,9 +13,9 @@ void main() {
       expect(memory, isNotNull);
     });
 
-    ProcessResult runVirtualMemoryScript(
-        String when, int protection, String op) {
-      return Process.runSync(
+    Future<ProcessResult> runVirtualMemoryScript(
+        String when, int protection, String op) async {
+      final future = Process.run(
         'dart',
         [
           'test/src/virtual_memory/virtual_memory_error_script.dart'
@@ -25,15 +26,16 @@ void main() {
         ],
         runInShell: true,
       );
+      return future.timeout(const Duration(seconds: 5));
     }
 
-    void testProtection(String when, int protection) {
+    Future<void> testProtection(String when, int protection) async {
       final read = protection & VirtualMemory.protectionRead != 0;
       final write = protection & VirtualMemory.protectionWrite != 0;
 
       // Try read
       {
-        final result = runVirtualMemoryScript(when, protection, 'read');
+        final result = await runVirtualMemoryScript(when, protection, 'read');
         if (read) {
           expect(result.stderr, '');
           expect(result.stdout, contains('SUCCESS'));
@@ -44,7 +46,7 @@ void main() {
 
       // Try write
       {
-        final result = runVirtualMemoryScript(when, protection, 'write');
+        final result = await runVirtualMemoryScript(when, protection, 'write');
         if (write) {
           expect(result.stderr, '');
           expect(result.stdout, contains('SUCCESS'));
@@ -54,28 +56,30 @@ void main() {
       }
     }
 
-    test('allocate(..., protection:VirtualMemory.protectionNoAccess)', () {
-      testProtection('allocate', VirtualMemory.protectionNoAccess);
+    test('allocate(..., protection:VirtualMemory.protectionNoAccess)',
+        () async {
+      await testProtection('allocate', VirtualMemory.protectionNoAccess);
     });
 
-    test('allocate(..., protection:VirtualMemory.protectionRead)', () {
-      testProtection('allocate', VirtualMemory.protectionRead);
+    test('allocate(..., protection:VirtualMemory.protectionRead)', () async {
+      await testProtection('allocate', VirtualMemory.protectionRead);
     });
 
-    test('allocate(..., protection:VirtualMemory.protectionReadWrite)', () {
-      testProtection('allocate', VirtualMemory.protectionReadWrite);
+    test('allocate(..., protection:VirtualMemory.protectionReadWrite)',
+        () async {
+      await testProtection('allocate', VirtualMemory.protectionReadWrite);
     });
 
-    test('setProtection(..., VirtualMemory.protectionNoAccess)', () {
-      testProtection('setProtection', VirtualMemory.protectionNoAccess);
+    test('setProtection(..., VirtualMemory.protectionNoAccess)', () async {
+      await testProtection('setProtection', VirtualMemory.protectionNoAccess);
     });
 
-    test('setProtection(..., VirtualMemory.protectionRead)', () {
-      testProtection('setProtection', VirtualMemory.protectionRead);
+    test('setProtection(..., VirtualMemory.protectionRead)', () async {
+      await testProtection('setProtection', VirtualMemory.protectionRead);
     });
 
-    test('setProtection(..., VirtualMemory.protectionReadWrite)', () {
-      testProtection('setProtection', VirtualMemory.protectionReadWrite);
+    test('setProtection(..., VirtualMemory.protectionReadWrite)', () async {
+      await testProtection('setProtection', VirtualMemory.protectionReadWrite);
     });
 
     test('mutate the first element: OK', () {
@@ -104,5 +108,5 @@ void main() {
       // TODO: How to test this?
       memory.free();
     });
-  }, testOn: 'posix || windows');
+  }, testOn: 'mac-os');
 }

@@ -1,3 +1,7 @@
+[![Pub Package](https://img.shields.io/pub/v/os.svg)](https://pub.dartlang.org/packages/os)
+[![Github Actions CI](https://github.com/dart-interop/os/workflows/Dart%20CI/badge.svg)](https://github.com/dart-interop/os/actions?query=workflow%3A%22Dart+CI%22)
+[![Build Status](https://travis-ci.org/dart-interop/os.svg?branch=master)](https://travis-ci.org/dart-interop/os)
+
 # Overview
 This package provides access to various low-level APIs of operating systems. The package binds with
 _libc_ (Linux, Mac OS X) and _kernel32.dll_ (Windows) using [dart:ffi](https://dart.dev/guides/libraries/c-interop).

@@ -1,4 +1,7 @@
 # Changelog
+## 0.1.3
+  * Improved documentation.
+
 ## 0.1.2
   * Updated to SDK 2.7.
 
