@@ -40,7 +40,7 @@ class DynamicLibraryProvider {
     if (isDarwin) {
       return darwinNames;
     }
-    if (Platform.isLinux) {
+    if (Platform.isLinux || Platform.isAndroid) {
       return linuxNames;
     }
     if (Platform.isWindows) {
