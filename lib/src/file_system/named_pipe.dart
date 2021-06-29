@@ -13,11 +13,11 @@
 // limitations under the License.
 
 import 'dart:async';
-import 'dart:ffi' as ffi;
+import 'dart:ffi';
 import 'dart:io';
 import 'dart:typed_data';
 
-import 'package:ffi/ffi.dart' as ffi;
+import 'package:ffi/ffi.dart';
 
 import '../libc/all.dart' as libc;
 
@@ -27,7 +27,7 @@ const _shortDuration = Duration(microseconds: 100);
 /// Opens a file and returns file descriptor, which can be used with other
 /// 'libc' functions.
 int _openFd(String path, int flags) {
-  final pathAddr = ffi.Utf8.toUtf8(path);
+  final pathAddr = path.toNativeUtf8();
   try {
     return libc.open(
       pathAddr,
@@ -35,7 +35,7 @@ int _openFd(String path, int flags) {
       0,
     );
   } finally {
-    ffi.free(pathAddr);
+    malloc.free(pathAddr);
   }
 }
 
@@ -52,7 +52,7 @@ class NamedPipe {
   ///
   /// Parameter [mode] can be used to specify Posix file permissions.
   void createSync({int mode = 0x1FF}) {
-    final pathAddr = ffi.Utf8.toUtf8(path);
+    final pathAddr = path.toNativeUtf8();
     try {
       final result = libc.mkfifo(
         pathAddr,
@@ -62,7 +62,7 @@ class NamedPipe {
         throw _NamedPipeException('create', path, libc.errorCode);
       }
     } finally {
-      ffi.free(pathAddr);
+      malloc.free(pathAddr);
     }
   }
 
@@ -74,7 +74,7 @@ class NamedPipe {
     if (!existsSync()) {
       return;
     }
-    final pathAddr = ffi.Utf8.toUtf8(path);
+    final pathAddr = path.toNativeUtf8();
     try {
       final result = libc.unlink(
         pathAddr,
@@ -87,7 +87,7 @@ class NamedPipe {
         );
       }
     } finally {
-      ffi.free(pathAddr);
+      malloc.free(pathAddr);
     }
   }
 
@@ -114,7 +114,7 @@ class NamedPipe {
 
       // Allocate a buffer that can be filled by 'libc'
       final bufferLength = 512;
-      final buffer = ffi.allocate<ffi.Uint8>(count: bufferLength);
+      final buffer = malloc.allocate<Uint8>(bufferLength);
       final bufferData = buffer.asTypedList(bufferLength);
 
       var libcClosed = false;
@@ -132,7 +132,7 @@ class NamedPipe {
           libcClosed = true;
 
           // Free memory
-          ffi.free(buffer);
+          malloc.free(buffer);
 
           // Close file handle
           libc.close(fd);
@@ -266,7 +266,7 @@ class _NamedPipeWriter implements Sink<List<int>>, StreamConsumer<List<int>> {
 
     // Allocate buffer than 'libc' can use
     final length = data.length;
-    final pointer = ffi.allocate<ffi.Uint8>(count: length);
+    final pointer = malloc.allocate<Uint8>(length);
 
     try {
       // Declare remaining pointer/length
@@ -304,7 +304,7 @@ class _NamedPipeWriter implements Sink<List<int>>, StreamConsumer<List<int>> {
         await Future.delayed(_shortDuration);
       }
     } finally {
-      ffi.free(pointer);
+      malloc.free(pointer);
     }
   }
 

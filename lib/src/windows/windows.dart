@@ -17,7 +17,6 @@ library os.windows.kernel;
 
 import 'dart:ffi' as ffi;
 
-import 'package:ffi/ffi.dart' as ffi;
 import 'package:os/loading.dart';
 
 const MEM_COALESCE_PLACEHOLDERS = 0x1;

@@ -15,8 +15,6 @@
 import 'dart:ffi' as ffi;
 import 'dart:typed_data';
 
-import 'package:ffi/ffi.dart' as ffi;
-
 import '../libc/all.dart' as libc;
 import 'virtual_memory.dart';
 
