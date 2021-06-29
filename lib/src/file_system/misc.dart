@@ -13,7 +13,6 @@
 // limitations under the License.
 
 import 'dart:async';
-import 'dart:ffi' as ffi;
 import 'dart:io';
 
 import 'package:ffi/ffi.dart' as ffi;
@@ -35,7 +34,7 @@ void chmodSync(FileSystemEntity entity, int mode) {
     // TODO: Implement in Windows?
     throw UnsupportedError('Not supported in Windows');
   }
-  final pathAddr = ffi.Utf8.toUtf8(entity.path);
+  final pathAddr = entity.path.toNativeUtf8();
   try {
     final result = libc.chmod(
       pathAddr,
@@ -45,6 +44,6 @@ void chmodSync(FileSystemEntity entity, int mode) {
       throw StateError('Error code: ${libc.errorDescription}');
     }
   } finally {
-    ffi.free(pathAddr);
+    ffi.malloc.free(pathAddr);
   }
 }

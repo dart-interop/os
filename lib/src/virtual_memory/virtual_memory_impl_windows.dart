@@ -12,17 +12,17 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import 'dart:ffi' as ffi;
+import 'dart:ffi';
 import 'dart:typed_data';
 
-import 'package:ffi/ffi.dart' as ffi;
+import 'package:ffi/ffi.dart';
 
 import '../libc/all.dart' as libc;
 import '../windows/windows.dart' as windows;
 import 'virtual_memory.dart';
 
 class VirtualMemoryImplWindows implements VirtualMemory {
-  final ffi.Pointer<ffi.Uint8> _pointer;
+  final Pointer<Uint8> _pointer;
 
   @override
   final int size;
@@ -48,7 +48,7 @@ class VirtualMemoryImplWindows implements VirtualMemory {
 
   @override
   void setProtection(int protection) {
-    final oldPtr = ffi.allocate<ffi.Uint32>();
+    final oldPtr = malloc.allocate<Uint32>(1);
     try {
       windows.virtualProtect(
         _pointer,
@@ -57,16 +57,16 @@ class VirtualMemoryImplWindows implements VirtualMemory {
         oldPtr,
       );
     } finally {
-      ffi.free(oldPtr);
+      malloc.free(oldPtr);
     }
   }
 
   static VirtualMemory allocate(
     int size, {
-    int protection,
-    int flags,
+    required int protection,
+    int? flags,
   }) {
-    final nullPointer = ffi.Pointer<ffi.Uint8>.fromAddress(0);
+    final nullPointer = Pointer<Uint8>.fromAddress(0);
     final resultPointer = windows.virtualAlloc(
       nullPointer,
       size,
@@ -76,7 +76,7 @@ class VirtualMemoryImplWindows implements VirtualMemory {
     return VirtualMemoryImplWindows.fromPointer(resultPointer, size);
   }
 
-  static int _toWindowsFlags(int flags) {
+  static int _toWindowsFlags(int? flags) {
     var result = windows.MEM_COMMIT | windows.MEM_RESERVE;
     return result;
   }

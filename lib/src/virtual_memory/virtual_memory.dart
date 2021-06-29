@@ -16,8 +16,6 @@ import 'dart:ffi' as ffi;
 import 'dart:io';
 import 'dart:typed_data';
 
-import 'package:ffi/ffi.dart' as ffi;
-
 import '../libc/all.dart' as libc;
 import 'virtual_memory_impl_posix.dart';
 import 'virtual_memory_impl_windows.dart';
@@ -34,8 +32,8 @@ abstract class VirtualMemory {
 
   factory VirtualMemory.allocate(
     int size, {
-    int protection,
-    int flags,
+    int? protection,
+    int? flags,
   }) {
     if (size < 0) {
       throw ArgumentError.value(size, 'size');
