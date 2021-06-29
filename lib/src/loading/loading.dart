@@ -27,7 +27,7 @@ class DynamicLibraryProvider {
   final List<String> windowsNames;
   final List<String> otherNames;
 
-  ffi.DynamicLibrary _dynamicLibrary;
+  ffi.DynamicLibrary? _dynamicLibrary;
 
   DynamicLibraryProvider({
     this.linuxNames = const [],
@@ -78,7 +78,7 @@ class DynamicLibraryProvider {
         'The library is only supported in: ${platformList.join(', ')}',
       );
     }
-    Object firstError;
+    Object? firstError;
     for (var name in currentNames) {
       try {
         final result = ffi.DynamicLibrary.open(name);

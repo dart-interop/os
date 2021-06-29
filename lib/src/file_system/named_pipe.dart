@@ -182,7 +182,7 @@ class NamedPipe {
   ///
   /// Optional parameter [timeout] defines how long to wait for readers to open
   /// the pipe.
-  _NamedPipeWriter openWrite({Duration timeout}) {
+  _NamedPipeWriter openWrite({Duration? timeout}) {
     return _NamedPipeWriter(path, timeout: timeout);
   }
 }
@@ -203,12 +203,12 @@ class _NamedPipeException implements Exception {
 
 class _NamedPipeWriter implements Sink<List<int>>, StreamConsumer<List<int>> {
   final String path;
-  int _fd;
-  Future<void> _future;
+  int? _fd;
+  Future<void>? _future;
   bool _isClosed = false;
-  final Duration _timeout;
+  final Duration? _timeout;
 
-  _NamedPipeWriter(this.path, {Duration timeout}) : _timeout = timeout {
+  _NamedPipeWriter(this.path, {Duration? timeout}) : _timeout = timeout {
     if (!File(path).existsSync()) {
       throw StateError('File "$path" does not exist');
     }
@@ -321,7 +321,7 @@ class _NamedPipeWriter implements Sink<List<int>>, StreamConsumer<List<int>> {
           // Wait a bit more
           await Future.delayed(_shortDuration);
           if (_timeout != null &&
-              DateTime.now().isAfter(startedAt.add(_timeout))) {
+              DateTime.now().isAfter(startedAt.add(_timeout!))) {
             throw TimeoutException('Timeout before reader was attached');
           }
           continue;

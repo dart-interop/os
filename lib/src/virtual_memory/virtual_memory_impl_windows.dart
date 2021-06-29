@@ -63,8 +63,8 @@ class VirtualMemoryImplWindows implements VirtualMemory {
 
   static VirtualMemory allocate(
     int size, {
-    int protection,
-    int flags,
+    required int protection,
+    int? flags,
   }) {
     final nullPointer = Pointer<Uint8>.fromAddress(0);
     final resultPointer = windows.virtualAlloc(
@@ -76,7 +76,7 @@ class VirtualMemoryImplWindows implements VirtualMemory {
     return VirtualMemoryImplWindows.fromPointer(resultPointer, size);
   }
 
-  static int _toWindowsFlags(int flags) {
+  static int _toWindowsFlags(int? flags) {
     var result = windows.MEM_COMMIT | windows.MEM_RESERVE;
     return result;
   }

@@ -123,7 +123,7 @@ typedef _close_C = ffi.Int32 Function(
 );
 
 typedef _close_Dart = int Function(
-  int fd,
+  int? fd,
 );
 
 typedef _mkfifo_C = ffi.Int32 Function(
@@ -148,8 +148,8 @@ typedef _mmap_C = ffi.Pointer<ffi.Uint8> Function(
 typedef _mmap_Dart = ffi.Pointer<ffi.Uint8> Function(
   ffi.Pointer<ffi.Uint8> pointer,
   int size, // size_t
-  int protection,
-  int flags,
+  int? protection,
+  int? flags,
   int fileDescriptor,
   int offset, // off_t
 );
@@ -237,18 +237,18 @@ typedef _write_C = ffi.Int32 Function(
 );
 
 typedef _write_Dart = int Function(
-  int fd,
+  int? fd,
   ffi.Pointer<ffi.Uint8> buffer,
   int length,
 );
 
 abstract class PollFd extends ffi.Struct {
   @ffi.Int32()
-  int fd;
+  int? fd;
 
   @ffi.Int16()
-  int events;
+  int? events;
 
   @ffi.Int16()
-  int revents;
+  int? revents;
 }

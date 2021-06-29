@@ -53,8 +53,8 @@ class VirtualMemoryImplPosix implements VirtualMemory {
 
   static VirtualMemory allocate(
     int size, {
-    int protection,
-    int flags,
+    int? protection,
+    int? flags,
   }) {
     final pointer = libc.mmap(
       ffi.Pointer<ffi.Uint8>.fromAddress(0),
